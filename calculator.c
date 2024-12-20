@@ -52,14 +52,20 @@ int performOperation(int operand1, int operand2, char operator)
 
 int evaluateExpression(char *expression)
 {
+    for (int i = 0; expression[i] != '\0'; i++)
+    {
+        if (isspace(expression[i]))
+        {
+            printf("Error: Invalid expression due to spaces.\n");
+            return -999999;
+        }
+    }
+
     int valueStack[SIZE], valueTop = -1;
     char operatorStack[SIZE], operatorTop = -1;
 
     for (int i = 0; expression[i] != '\0'; i++)
     {
-        if (isspace(expression[i]))
-            continue;
-
         if (isdigit(expression[i]))
         {
             int number = 0;
@@ -99,12 +105,12 @@ int evaluateExpression(char *expression)
 
     return valueStack[valueTop];
 }
-
 int main()
 {
     char input[SIZE];
     printf("Enter an expression: ");
     fgets(input, SIZE, stdin);
+    input[strcspn(input, "\n")] = '\0';
     int result = evaluateExpression(input);
     if (result != -999999)
     {
