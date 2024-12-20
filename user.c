@@ -11,23 +11,26 @@ typedef struct
 
 int checkUserID(int id)
 {
+    int result = 0; // Default result: User ID not found
     FILE *fp = fopen("users_data.txt", "r");
     if (!fp)
     {
-        // printf("Unable to open the file.\n");
-        return -1;
+        result = -1; // File error
     }
-    Person tempUser;
-    while (fscanf(fp, "%d,%49[^,],%d", &tempUser.userID, tempUser.userName, &tempUser.userAge) == 3)
+    else
     {
-        if (tempUser.userID == id)
+        Person tempUser;
+        while (fscanf(fp, "%d,%49[^,],%d", &tempUser.userID, tempUser.userName, &tempUser.userAge) == 3)
         {
-            fclose(fp);
-            return 1;
+            if (tempUser.userID == id)
+            {
+                result = 1; // User ID exists
+                break;
+            }
         }
+        fclose(fp);
     }
-    fclose(fp);
-    return 0;
+    return result;
 }
 
 void addUser()
@@ -198,29 +201,26 @@ int main()
         printf("Enter your choice: ");
         scanf("%d", &choice);
 
-        if (choice == 1)
+        switch (choice)
         {
+        case 1:
             addUser();
-        }
-        else if (choice == 2)
-        {
+            break;
+        case 2:
             listUsers();
-        }
-        else if (choice == 3)
-        {
+            break;
+        case 3:
             modifyUser();
-        }
-        else if (choice == 4)
-        {
+            break;
+        case 4:
             removeUser();
-        }
-        else if (choice == 5)
-        {
+            break;
+        case 5:
             printf("Exiting...\n");
-        }
-        else
-        {
+            break;
+        default:
             printf("Invalid choice. Please try again.\n");
+            break;
         }
     } while (choice != 5);
 
