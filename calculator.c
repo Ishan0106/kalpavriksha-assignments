@@ -7,38 +7,47 @@
 
 int getPrecedence(char operator)
 {
+    int precedence = -1;
     switch (operator)
     {
     case '+':
     case '-':
-        return 1;
+        precedence = 1;
+        break;
     case '*':
     case '/':
-        return 2;
+        precedence = 2;
+        break;
     }
-    return -1;
+    return precedence;
 }
 
 int performOperation(int operand1, int operand2, char operator)
 {
+    int result = 0;
     switch (operator)
     {
     case '*':
-        return operand1 * operand2;
+        result = operand1 * operand2;
+        break;
     case '+':
-        return operand1 + operand2;
+        result = operand1 + operand2;
+        break;
     case '-':
-        return operand1 - operand2;
+        result = operand1 - operand2;
+        break;
     case '/':
         if (operand2 == 0)
         {
             printf("Error: Division by zero.\n");
             exit(1);
         }
-        return operand1 / operand2;
+        result = operand1 / operand2;
+        break;
     default:
-        return 0;
+        break;
     }
+    return result;
 }
 
 int evaluateExpression(char *expression)
