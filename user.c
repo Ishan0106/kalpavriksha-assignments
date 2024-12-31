@@ -11,7 +11,7 @@ typedef struct
 
 int checkUserID(int id)
 {
-    int result = 0; // Default result: User ID not found
+    int result = 0;
     FILE *fp = fopen("users_data.txt", "r");
     if (!fp)
     {
@@ -78,114 +78,133 @@ void listUsers()
 
 void modifyUser()
 {
-    int idToUpdate, found = 0;
+    int idToUpdate, found = 0, result = 0;
     Person tempUser;
-    FILE *fp = fopen("users_data.txt", "r");
-    if (!fp)
-    {
-        printf("Error opening file\n");
-        return;
-    }
-
+    FILE *fp = NULL;
     Person userList[100];
     int totalUsers = 0;
-
-    while (fscanf(fp, "%d,%49[^,],%d", &tempUser.userID, tempUser.userName, &tempUser.userAge) == 3)
-    {
-        userList[totalUsers++] = tempUser;
+    fp = fopen("users_data.txt", "r");
+    if (!fp){
+        printf("Error opening file\n");
+        result = -1;
     }
-    fclose(fp);
-
-    printf("Enter User ID to update: ");
-    scanf("%d", &idToUpdate);
-    for (int i = 0; i < totalUsers; i++)
-    {
-        if (userList[i].userID == idToUpdate)
+    else{
+        while (fscanf(fp, "%d,%49[^,],%d", &tempUser.userID, tempUser.userName, &tempUser.userAge) == 3){
+            userList[totalUsers++] = tempUser;
+        }
+        fclose(fp);
+        fp = NULL;
+        printf("Enter User ID to update: ");
+        scanf("%d", &idToUpdate);
+        for (int i = 0; i < totalUsers; i++)
         {
-            found = 1;
-            printf("Enter new Username: ");
-            scanf(" %49s", userList[i].userName);
-            printf("Enter new User Age: ");
-            scanf("%d", &userList[i].userAge);
-            printf("\nUpdated successfully:\n");
-            printf("UserID: %d, Username: %s, Age: %d\n", userList[i].userID, userList[i].userName, userList[i].userAge);
-            break;
+            if (userList[i].userID == idToUpdate)
+            {
+                found = 1;
+                printf("Enter new Username: ");
+                scanf(" %49s", userList[i].userName);
+                printf("Enter new User Age: ");
+                scanf("%d", &userList[i].userAge);
+                printf("\nUpdated successfully:\n");
+                printf("UserID: %d, Username: %s, Age: %d\n", userList[i].userID, userList[i].userName, userList[i].userAge);
+                break;
+            }
+        }
+        if (!found){
+            printf("Error: User ID %d not found\n");
+            result = -1;
+        }
+        else{
+            fp = fopen("users_data.txt", "w");
+            if (!fp)
+            {
+                printf("Error opening file\n");
+                result = -1;
+            }
+            else
+            {
+                for (int i = 0; i < totalUsers; i++)
+                {
+                    fprintf(fp, "%d,%s,%d\n", userList[i].userID, userList[i].userName, userList[i].userAge);
+                }
+            }
         }
     }
-    if (!found)
+    if (fp)
     {
-        printf("Error: User ID %d not found\n", idToUpdate);
-        return;
+        fclose(fp);
     }
-    fp = fopen("users_data.txt", "w");
-    if (!fp)
+    if (result == -1)
     {
-        printf("Error opening file\n");
-        return;
+        printf("Operation failed.\n");
     }
-    for (int i = 0; i < totalUsers; i++)
-    {
-        fprintf(fp, "%d,%s,%d\n", userList[i].userID, userList[i].userName, userList[i].userAge);
-    }
-    fclose(fp);
 }
 
 void removeUser()
 {
-    int idToDelete, found = 0;
+    int idToDelete, found = 0, result = 0;
     Person tempUser;
-    FILE *fp = fopen("users_data.txt", "r");
-    if (!fp)
-    {
-        printf("Error opening file\n");
-        return;
-    }
+    FILE *fp = NULL;
     Person userList[100];
     int totalUsers = 0;
-
-    while (fscanf(fp, "%d,%49[^,],%d", &tempUser.userID, tempUser.userName, &tempUser.userAge) == 3)
-    {
-        userList[totalUsers++] = tempUser;
+    fp = fopen("users_data.txt", "r");
+    if (!fp){
+        printf("Error opening file\n");
+        result = -1;
     }
-    fclose(fp);
-
-    printf("Enter User ID to delete: ");
-    scanf("%d", &idToDelete);
-
-    for (int i = 0; i < totalUsers; i++)
-    {
-        if (userList[i].userID == idToDelete)
+    else{
+        while (fscanf(fp, "%d,%49[^,],%d", &tempUser.userID, tempUser.userName, &tempUser.userAge) == 3)
         {
-            found = 1;
-            for (int j = i; j < totalUsers - 1; j++)
+            userList[totalUsers++] = tempUser;
+        }
+        fclose(fp);
+        fp = NULL;
+        printf("Enter User ID to delete: ");
+        scanf("%d", &idToDelete);
+        for (int i = 0; i < totalUsers; i++)
+        {
+            if (userList[i].userID == idToDelete)
             {
-                userList[j] = userList[j + 1];
+                found = 1;
+                for (int j = i; j < totalUsers - 1; j++)
+                {
+                    userList[j] = userList[j + 1];
+                }
+                totalUsers--;
+                break;
             }
-            totalUsers--;
-            break;
+        }
+        if (!found){
+            printf("Error: User ID %d not found\n", idToDelete);
+            result = -1;
+        }
+        else{
+            fp = fopen("users_data.txt", "w");
+            if (!fp)
+            {
+                printf("Error opening file\n");
+                result = -1;
+            }
+            else
+            {
+                for (int i = 0; i < totalUsers; i++)
+                {
+                    fprintf(fp, "%d,%s,%d\n", userList[i].userID, userList[i].userName, userList[i].userAge);
+                }
+                printf("User with User ID %d deleted successfully\n", idToDelete);
+            }
         }
     }
-
-    if (!found)
+    if (fp)
     {
-        printf("Error: User ID %d not found\n", idToDelete);
-        return;
+        fclose(fp);
     }
-
-    fp = fopen("users_data.txt", "w");
-    if (!fp)
+    if (result == -1)
     {
-        printf("Error opening file\n");
-        return;
+        printf("Operation failed.\n");
     }
-
-    for (int i = 0; i < totalUsers; i++)
-    {
-        fprintf(fp, "%d,%s,%d\n", userList[i].userID, userList[i].userName, userList[i].userAge);
-    }
-    fclose(fp);
-    printf("User with User ID %d deleted successfully\n", idToDelete);
 }
+
 
 int main()
 {
