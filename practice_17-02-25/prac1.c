@@ -1,50 +1,58 @@
+// hashmap frequency of given numbers
+// linear probing
+// array of structure
 #include<stdio.h>
 #include<stdlib.h>
-#include<string.h>
+#define MAX 100
 
+struct pair{
+    int key;
+    int value;
+};
 
-int is_distinct(char str[],int i,int j){
-    int arr[26] = {0};
-    int cnt = 0;
-    for(int p = i ; p <= j ; p++){
-        arr[str[p] - 'a'] = 1;
+void init_hashmap(struct pair hashmap[]){
+    for(int i = 0 ; i < MAX ; i++){
+        hashmap[i].key = -1;
+        hashmap[i].value = 0;
     }
-    for(int p = 0 ; p <= 25 ; p++){
-        if(arr[p] == 1){
-            cnt++;
-        }
+}
+
+int hash(int key){
+    return key % 100;
+}
+
+void insert(int key , struct pair hashmap[]){
+    int index = hash(key);
+    while(hashmap[index].key!=-1 && hashmap[index].key!=key){
+        index = (index + 1)%MAX;
     }
-    return cnt;
+    if(hashmap[index].key==key)
+    {
+        hashmap[index].value++;
+        return;
+    }
+    hashmap[index].key=key;
+    hashmap[index].value++;
 }
 
 
 int main(){
-    char str[100];
-    int k;
-    scanf("%s",str);
-    scanf("%d",&k);
-    int n = strlen(str);
-    int max_len = 0;
-    int start = -1;
-    int end = -1;
+    int n;
+    scanf("%d",&n);
+    int arr[n];
     for(int i = 0 ; i < n ; i++){
-        for(int j = i+1 ; j < n ; j++){
-            if(is_distinct(str,i,j) == k){
-                if(j-i+1 > max_len){
-                    max_len=j-i+1;
-                    start = i;
-                    end = j;
-                }
-            }
+        scanf("%d",&arr[i]);
+    }
+    struct pair hashmap[MAX];
+    init_hashmap(hashmap);
+    for(int i = 0 ; i < n ; i++){
+        insert(arr[i],hashmap);
+    }
+    for(int i = 0 ; i < MAX ; i++){
+        if(hashmap[i].key != -1){
+            printf("%d -> %d\n",hashmap[i].key,hashmap[i].value);
         }
     }
-    if(start == -1){
-        printf("%d",-1);
-        return 0;
-    }
-    for(int i=start;i<=end;i++)
-    {
-        printf("%c",str[i]);
-    }
     return 0;
+
 }
